@@ -1,5 +1,6 @@
 from nerf.utils import *
 from nerf.utils import Trainer as _Trainer
+import time
 
 # for isinstance
 from tensoRF.network_cc import NeRFNetwork as CCNeRF
@@ -50,7 +51,7 @@ class Trainer(_Trainer):
 
     def train_one_epoch(self, loader):
         self.log(f"==> Start Training Epoch {self.epoch}, lr={self.optimizer.param_groups[0]['lr']:.6f} ...")
-
+        start_time = time.time()
         total_loss = 0
         if self.local_rank == 0 and self.report_metric_at_train:
             for metric in self.metrics:
@@ -148,7 +149,7 @@ class Trainer(_Trainer):
                 self.lr_scheduler.step(average_loss)
             else:
                 self.lr_scheduler.step()
-
+        print(f'rays_per_second: {self.local_step * 4096/(time.time()-start_time)}')
         self.log(f"==> Finished Epoch {self.epoch}.")
 
 

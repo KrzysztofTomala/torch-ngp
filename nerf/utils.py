@@ -564,7 +564,7 @@ class Trainer(object):
         return pred_rgb, gt_rgb, loss
 
     def eval_step(self, data):
-
+        start_time = time.time()
         rays_o = data['rays_o'] # [B, N, 3]
         rays_d = data['rays_d'] # [B, N, 3]
         images = data['images'] # [B, H, W, 3/4]
@@ -586,7 +586,7 @@ class Trainer(object):
         pred_depth = outputs['depth'].reshape(B, H, W)
 
         loss = self.criterion(pred_rgb, gt_rgb).mean()
-
+        print(f'rays/sec: {B*H*W/(time.time()-start_time)}')
         return pred_rgb, pred_depth, gt_rgb, loss
 
     # moved out bg_color and perturb for more flexible control...
